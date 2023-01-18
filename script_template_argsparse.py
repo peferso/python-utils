@@ -30,9 +30,6 @@ class Actions():
     """
     def __init__(self, input_args):
         self._option_1 = input_args.option_1
-        if input_args.action not in self.dir():
-              
-            raise Exception(f'action {args.action} does not exist')
     
     def action_1(self) -> None:
         logger.info(f'Starting action {args.action}...')
@@ -76,7 +73,7 @@ def init_argparse() -> argparse.ArgumentParser:
 if __name__ == '__main__':
     parser = init_argparse()
     args = parser.parse_args()
-    if not (args.action):
+    if not (args.action) or args.action not in dir(Actions):
         parser.print_help()
         sys.exit(1)
     else:
