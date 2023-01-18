@@ -30,6 +30,9 @@ class Actions():
     """
     def __init__(self, input_args):
         self._option_1 = input_args.option_1
+        if input_args.action not in self.dir():
+              
+            raise Exception(f'action {args.action} does not exist')
     
     def action_1(self) -> None:
         logger.info(f'Starting action {args.action}...')
