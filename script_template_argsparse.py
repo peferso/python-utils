@@ -29,7 +29,15 @@ class Actions():
         input_args (argparse.ArgumentParser): argument parser object.
     """
     def __init__(self, input_args):
-        self._input_parameter = input_args.input_parameter
+        self._option_1 = input_args.option_1
+    
+    def action_1(self) -> None:
+        logger.info(f'Starting action {args.action}...')
+        pass
+    
+    def action_2(self) -> None:
+        logger.info(f'Starting action {args.action}...')
+        pass
 
 
 def init_argparse() -> argparse.ArgumentParser:
@@ -40,11 +48,11 @@ def init_argparse() -> argparse.ArgumentParser:
         argparse.ArgumentParser: argument parser object
     """
     parser = argparse.ArgumentParser(
-       usage='%(prog)s run -o [OPTION]',
+       usage='%(prog)s action -o [OPTION]',
        description='Some useful description of the script usage.'
     )
     parser.add_argument(
-        'run',
+        'action',
         nargs='?',
         help='The action or task to run.',
         type=str,
@@ -54,9 +62,9 @@ def init_argparse() -> argparse.ArgumentParser:
         ]
     )
     parser.add_argument(
-        '-report_file_path',
+        '-option_1',
         nargs='?',
-        help='Path to the json file.',
+        help='Some option description.',
         type=str,
         default=None
     )
@@ -65,8 +73,10 @@ def init_argparse() -> argparse.ArgumentParser:
 if __name__ == '__main__':
     parser = init_argparse()
     args = parser.parse_args()
-    if not (args.run):
+    if not (args.action):
         parser.print_help()
         sys.exit(1)
     else:
-        run(args)
+        a = Actions(args)
+        action = getattr(a, args.action)
+        action()
