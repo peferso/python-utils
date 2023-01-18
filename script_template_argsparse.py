@@ -73,7 +73,7 @@ def init_argparse() -> argparse.ArgumentParser:
 if __name__ == '__main__':
     parser = init_argparse()
     args = parser.parse_args()
-    if not (args.action) or args.action not in dir(Actions):
+    if (not (args.action)) or (args.action not in dir(Actions)):
         parser.print_help()
         sys.exit(1)
     else:
