@@ -8,7 +8,7 @@
         "--cov=myproj/",
         "--cov-report=xml",
         "--pdb",
-        "gdsbbta"
+        "path_to_tests"
     ]
 
 }
