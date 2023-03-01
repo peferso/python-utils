@@ -52,6 +52,6 @@ def get_hours_dif(
     datetime_A = pd.Series(date_time).dt.tz_localize(timezone_A)
     datetime_B = datetime_A.dt.tz_convert(timezone_B)
     _datetime_A = pd.to_datetime(datetime_A.dt.strftime('%Y-%m-%d %H:%M:%S'))
-    _datetime_B = pd.to_datetime(datetime_B.dt.strftime('%Y-%m-%d %H:%M:%S'))   
+    _datetime_B = pd.to_datetime(datetime_B.dt.strftime('%Y-%m-%d %H:%M:%S'))
     time_dif = (_datetime_B - _datetime_A).astype('timedelta64[h]')
     return time_dif.values[0]
