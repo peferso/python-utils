@@ -107,25 +107,73 @@ def download_file(
     return local_file_path
 
 
-def list_folders_in_s3_path(
-    path: str,
-    bucket: s3.Bucket,
-    bucket_name: str
-) -> list:
-    response = bucket\
-        .meta\
-        .client\
-        .list_objects_v2(
+def list_all_directories_in_path(bucket_name, path):
+    """
+    List all directories (common prefixes) in a given path in an S3 bucket.
+
+    Parameters:
+    - bucket_name: The name of the S3 bucket.
+    - path: The path for which to list directories.
+
+    Returns:
+    - A list of directory names.
+    """
+    s3 = boto3.client('s3')
+
+    # Ensure the path ends with '/'
+    path = path if path.endswith('/') else f"{path}/"
+
+    # List objects with Delimiter='/' to get only top-level directories
+    response = s3.list_objects_v2(Bucket=bucket_name, Prefix=path, Delimiter='/')
+
+    # Extract directory names from the initial response
+    directories = [common_prefix.get('Prefix') for common_prefix in response.get('CommonPrefixes', [])]
+
+    # Continue paginating if there are more results
+    while response.get('NextContinuationToken'):
+        response = s3.list_objects_v2(
             Bucket=bucket_name,
             Prefix=path,
-            Delimiter='/'
+            Delimiter='/',
+            ContinuationToken=response['NextContinuationToken']
         )
-    # Extract folder names
-    folders = [
-        common_prefix.get('Prefix')
-        for common_prefix in response.get('CommonPrefixes', [])
-    ]
-    return folders
+        directories.extend([common_prefix.get('Prefix') for common_prefix in response.get('CommonPrefixes', [])])
+
+    return directories
+
+
+def list_all_files_in_path(bucket_name, path):
+    """
+    List all files in a given path in an S3 bucket.
+
+    Parameters:
+    - bucket_name: The name of the S3 bucket.
+    - path: The path for which to list files.
+
+    Returns:
+    - A list of file names.
+    """
+    s3 = boto3.client('s3')
+
+    # Ensure the path ends with '/'
+    path = path if path.endswith('/') else f"{path}/"
+
+    # List objects without Delimiter to get all objects, including files
+    response = s3.list_objects_v2(Bucket=bucket_name, Prefix=path)
+
+    # Extract file names from the initial response
+    files = [obj.get('Key') for obj in response.get('Contents', [])]
+
+    # Continue paginating if there are more results
+    while response.get('NextContinuationToken'):
+        response = s3.list_objects_v2(
+            Bucket=bucket_name,
+            Prefix=path,
+            ContinuationToken=response['NextContinuationToken']
+        )
+        files.extend([obj.get('Key') for obj in response.get('Contents', [])])
+
+    return files
 
 
 def get_batch_slice(
